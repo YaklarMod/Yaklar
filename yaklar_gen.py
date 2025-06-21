@@ -3,7 +3,7 @@ import requests
 
 # ==== CONFIGURE THIS SECTION ====
 TELEGRAM_BOT_TOKEN = "7797249295:AAHNEvN-pZUbTgPF9dldvIv22f_hczsU8n0"  # ← Replace this
-TELEGRAM_CHANNEL_ID = "-100XXXXXXXXXX"      # ← Replace this once known
+TELEGRAM_CHANNEL_ID = "-1002786359228"      # ← Replace this once known
 # =================================
 
 
