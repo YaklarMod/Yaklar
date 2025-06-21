@@ -14,8 +14,18 @@ def send_to_telegram(message):
         "text": message,
         "parse_mode": "HTML"
     }
-    response = requests.post(url, data=payload)
-    return response.ok
+    try:
+        response = requests.post(url, data=payload)
+        if response.status_code == 200:
+            return True
+        else:
+            st.error(f"❌ שגיאה: {response.status_code}")
+            st.code(response.text, language="json")
+            return False
+    except Exception as e:
+        st.error(f"❌ שגיאה בחיבור: {e}")
+        return False
+
 
 
 st.set_page_config(page_title="מחולל הודעות", layout="centered")
