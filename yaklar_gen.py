@@ -1,8 +1,38 @@
 import streamlit as st
+import requests
+
+# ==== CONFIGURE THIS SECTION ====
+TELEGRAM_BOT_TOKEN = "7797249295:AAHNEvN-pZUbTgPF9dldvIv22f_hczsU8n0"  # ← Replace this
+TELEGRAM_CHANNEL_ID = "-100XXXXXXXXXX"      # ← Replace this once known
+# =================================
+
+
+def send_to_telegram(message):
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": TELEGRAM_CHANNEL_ID,
+        "text": message,
+        "parse_mode": "HTML"
+    }
+    response = requests.post(url, data=payload)
+    return response.ok
+
+
+def get_chat_id():
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getUpdates"
+    try:
+        response = requests.get(url)
+        st.subheader("🔍 תוצאה מ-getUpdates:")
+        st.json(response.json())
+        st.info("🔍 שלח הודעה לערוץ ואז לחץ שוב כדי לראות את ה-ID")
+    except Exception as e:
+        st.error(f"שגיאה בקבלת Chat ID: {e}")
+
+
 
 st.set_page_config(page_title="מחולל הודעות", layout="centered")
 
-# RTL styling
+# RTL style
 st.markdown(
     """
     <style>
@@ -10,10 +40,6 @@ st.markdown(
         direction: rtl;
         text-align: right;
         font-family: Arial, sans-serif;
-    }
-    .css-1cpxqw2 {
-        direction: rtl !important;
-        text-align: right !important;
     }
     textarea {
         direction: rtl !important;
@@ -49,6 +75,7 @@ contact_name = st.text_input("שם איש קשר:")
 contact_phone = st.text_input("טלפון:")
 contact_role = st.text_input("תפקיד:")
 
+message = ""
 if st.button("✍️ צור הודעה"):
     lines = []
 
@@ -72,20 +99,17 @@ if st.button("✍️ צור הודעה"):
     elif use_status:
         st.warning("🛑 חסר סטטוס")
 
-    # איש קשר line
     contact_parts = []
     if use_contact_name:
         if contact_name:
             contact_parts.append(contact_name)
         else:
             st.warning("🛑 חסר שם איש קשר")
-
     if use_contact_phone:
         if contact_phone:
             contact_parts.append(contact_phone)
         else:
             st.warning("🛑 חסר טלפון")
-
     if use_contact_role:
         if contact_role:
             contact_parts.append(contact_role)
@@ -99,12 +123,30 @@ if st.button("✍️ צור הודעה"):
         message = "\n".join(lines)
         st.text_area("📋 התוצאה:", value=message, height=250)
 
-        st.markdown(
-            f"""
-            <button onclick="navigator.clipboard.writeText(`{message}`)" 
-                    style="margin-top:10px; padding:10px; font-size:16px;">
-                📋 העתק ללוח
-            </button>
-            """,
-            unsafe_allow_html=True
-        )
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if st.button("📋 העתק ללוח"):
+                st.markdown(
+                    f"""
+                    <script>
+                    navigator.clipboard.writeText(`{message}`)
+                    </script>
+                    """,
+                    unsafe_allow_html=True
+                )
+                st.success("הועתק ללוח ✅")
+
+        with col2:
+            if st.button("📤 שלח לטלגרם"):
+                success = send_to_telegram(message)
+                if success:
+                    st.success("ההודעה נשלחה לטלגרם ✅")
+                else:
+                    st.error("שליחה לטלגרם נכשלה ❌")
+
+# Optional tool: find your private channel's ID
+with st.expander("🔍 לחץ כאן כדי למצוא את מזהה הערוץ שלך (לערוצים פרטיים בלבד)"):
+    st.markdown("יש לשלוח הודעה לערוץ ואז ללחוץ על הכפתור:")
+    if st.button("📡 קבל Chat ID"):
+        get_chat_id()
