@@ -17,13 +17,15 @@ def send_to_telegram(message):
     try:
         response = requests.post(url, data=payload)
         if response.status_code == 200:
+            st.success("✅ ההודעה נשלחה לטלגרם")
             return True
         else:
-            st.error(f"❌ שגיאה: {response.status_code}")
+            st.error("❌ שליחה נכשלה")
             st.code(response.text, language="json")
             return False
     except Exception as e:
-        st.error(f"❌ שגיאה בחיבור: {e}")
+        st.error("❌ שגיאה כללית בשליחה")
+        st.exception(e)
         return False
 
 
@@ -137,8 +139,4 @@ if st.button("✍️ צור הודעה"):
 
         with col2:
             if st.button("📤 שלח לטלגרם"):
-                success = send_to_telegram(message)
-                if success:
-                    st.success("ההודעה נשלחה לטלגרם ✅")
-                else:
-                    st.error("שליחה לטלגרם נכשלה ❌")
+                send_to_telegram(message)
