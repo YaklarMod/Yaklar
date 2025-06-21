@@ -3,8 +3,8 @@ import requests
 
 # ==== CONFIGURE THIS SECTION ====
 TELEGRAM_BOT_TOKEN = "7797249295:AAHNEvN-pZUbTgPF9dldvIv22f_hczsU8n0"  # ← Replace this
-TELEGRAM_CHANNEL_ID = "-1002786359228"      # ← Replace this once known
-# =================================
+TELEGRAM_CHANNEL_ID = "-1002786359228"      # ← Your confirmed private channel ID
+# ========================
 
 
 def send_to_telegram(message):
@@ -18,21 +18,9 @@ def send_to_telegram(message):
     return response.ok
 
 
-def get_chat_id():
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/getUpdates"
-    try:
-        response = requests.get(url)
-        st.subheader("🔍 תוצאה מ-getUpdates:")
-        st.json(response.json())
-        st.info("🔍 שלח הודעה לערוץ ואז לחץ שוב כדי לראות את ה-ID")
-    except Exception as e:
-        st.error(f"שגיאה בקבלת Chat ID: {e}")
-
-
-
 st.set_page_config(page_title="מחולל הודעות", layout="centered")
 
-# RTL style
+# RTL styling
 st.markdown(
     """
     <style>
@@ -144,9 +132,3 @@ if st.button("✍️ צור הודעה"):
                     st.success("ההודעה נשלחה לטלגרם ✅")
                 else:
                     st.error("שליחה לטלגרם נכשלה ❌")
-
-# Optional tool: find your private channel's ID
-with st.expander("🔍 לחץ כאן כדי למצוא את מזהה הערוץ שלך (לערוצים פרטיים בלבד)"):
-    st.markdown("יש לשלוח הודעה לערוץ ואז ללחוץ על הכפתור:")
-    if st.button("📡 קבל Chat ID"):
-        get_chat_id()
